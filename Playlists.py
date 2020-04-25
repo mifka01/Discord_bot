@@ -96,10 +96,9 @@ class Playlists(commands.Cog):
     
         await Music.play(song=first_song, playlist=True, ctx=ctx)
         queue = []
-        for i ,song in enumerate (self.playlists[playlist]):
+        for song in random.sample(self.playlists[playlist], len(self.playlists[playlist])):
             source = await YTDLSource.from_url(url=song['url'])
-            queue.append(source)
-        Music.queue = random.sample(queue, len(queue))
+            Music.queue.append(source)
         await ctx.send("Playlist byl nahrán")
 
     @commands.command(name=options["plsongs"]["name"],
