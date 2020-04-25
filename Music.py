@@ -36,7 +36,7 @@ class Music(commands.Cog):
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
 
-        source = await YTDLSource.from_url(song)
+        source = YTDLSource.from_url(song)
         if first:
             self.queue.insert(1, source)
         else:
