@@ -4,6 +4,7 @@ from Music import Music
 from News import News 
 from Playlists import Playlists
 import os
+from bot_token import TOKEN
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"))
@@ -24,4 +25,4 @@ bot.add_cog(Informative(bot))
 bot.add_cog(Music(bot))
 bot.add_cog(News(bot))  
 bot.add_cog(Playlists(bot))
-bot.run(str(os.environ.get("TOKEN")))
+bot.run(TOKEN)

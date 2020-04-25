@@ -2,6 +2,7 @@ import requests
 import datetime
 from bs4 import BeautifulSoup
 import os
+from weather_api import API_KEY
 
 def get_covid_data():
     result = requests.get("https://onemocneni-aktualne.mzcr.cz/covid-19")
@@ -90,7 +91,7 @@ def get_news_data(url):
 
 
 def get_weather_data(city):
-    result = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={str(os.environ.get("API_KEY"))}&units=metric')
+    result = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric')
     data = result.json()
     weather_data = {
         "city_name": data["name"],
