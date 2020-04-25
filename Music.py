@@ -7,7 +7,6 @@ import os
 import shutil
 
 
-
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -27,7 +26,6 @@ class Music(commands.Cog):
             except (PermissionError, IndexError, FileNotFoundError):
                 pass
 
-
     @commands.command(name=options["play"]["name"],
                       description=options["play"]["description"],
                       aliases=options["play"]["aliases"])
@@ -38,7 +36,7 @@ class Music(commands.Cog):
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
 
-        source = YTDLSource.from_url(song)
+        source = await YTDLSource.from_url(song)
         if first:
             self.queue.insert(1, source)
         else:
@@ -56,9 +54,6 @@ class Music(commands.Cog):
                 await ctx.send(embed=queue_output(ctx, source.song_data))
             else:
                 pass
-            
-
-                
 
     @commands.command(name=options["join"]["name"],
                       description=options["join"]["description"],
@@ -80,9 +75,14 @@ class Music(commands.Cog):
 
     @commands.command(name=options["stop"]["name"],
                       description=options["stop"]["description"],
-                      aliases=options["stop"]["aliases"]) 
+                      aliases=options["stop"]["aliases"])
+    @commands.command(name=options["stop"]["name"],
+                      description=options["stop"]["description"],
+                      aliases=options["stop"]["aliases"])
     async def stop(self, ctx):
         """Bot will stop playing music"""
+        self.queue = []
+        self.voice_client.stop()
         await self.leave(ctx)
         shutil.rmtree('songs')
         self.queue = []
@@ -100,7 +100,7 @@ class Music(commands.Cog):
     async def resume(self, ctx):
         """Bot will resume currently paused song"""
         self.voice_client.resume()
-    
+
     @commands.command(name=options["skip"]["name"],
                       description=options["skip"]["description"],
                       aliases=options["skip"]["aliases"])
@@ -121,15 +121,15 @@ class Music(commands.Cog):
     async def song(self, ctx):
         """Bot will show currently playing"""
         await ctx.send(embed=playing_output(ctx, self.current_song))
-    
+
     @commands.command(name=options["remove"]["name"],
                       description=options["remove"]["description"],
                       aliases=options["remove"]["aliases"])
     async def remove(self, ctx, num: int):
         """Bot will remove chosen song from queue"""
-        if num <= len(self.queue) -1 :
+        if num <= len(self.queue) - 1:
             song = self.queue[num]
-            if num == 0 :
+            if num == 0:
                 await self.skip(ctx)
             else:
                 del self.queue[num]
@@ -137,13 +137,10 @@ class Music(commands.Cog):
             await ctx.send(embed=removed_song(ctx, song.song_data))
         else:
             pass
-    
+
     @commands.command(name=options["playfirst"]["name"],
                       description=options["playfirst"]["description"],
                       aliases=options["playfirst"]["aliases"])
     async def playfirst(self, ctx, *, song):
         """Bot will add song to first position in queue"""
         await self.play(ctx=ctx, song=song, first=True)
-    
-    
-    

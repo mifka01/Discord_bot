@@ -93,13 +93,14 @@ class Playlists(commands.Cog):
         """Bot will start playing songs from chosen playlist"""
         Music = self.bot.get_cog("Music")
         first_song = random.choice(self.playlists[playlist])['url']
-
+    
         await Music.play(song=first_song, playlist=True, ctx=ctx)
-
-        await ctx.send("Playlist se nahrává..")
-
-        Music.queue = self.load_to_queue(playlist)
-        await ctx.send("Hotovo.")
+        queue = []
+        for i ,song in enumerate (self.playlists[playlist]):
+            source = await YTDLSource.from_url(url=song['url'])
+            queue.append(source)
+        Music.queue = random.sample(queue, len(queue))
+        await ctx.send("Playlist byl nahrán")
 
     @commands.command(name=options["plsongs"]["name"],
                       description=options["plsongs"]["description"],
