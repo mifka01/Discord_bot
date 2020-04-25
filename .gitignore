@@ -1,0 +1,6 @@
+.env
+bot_token.py
+weather_api.py
+/__pycache__
+/.vscode
+/songs
