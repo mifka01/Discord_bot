@@ -42,4 +42,5 @@ class YTDLSource(discord.PCMVolumeTransformer):
         loop = loop or asyncio.get_event_loop()
         song = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=True))
         filename = ytdl.prepare_filename(song)
+        loop.close()
         return YTDLSource(discord.FFmpegPCMAudio(filename, **ffmpeg_options),song=song, filename=filename)
