@@ -6,6 +6,7 @@ from outputs import songs_in_playlist_output
 from YTDLSource import YTDLSource
 import json
 import random
+import time
 
 class Playlists(commands.Cog):
     def __init__(self, bot):
@@ -97,6 +98,7 @@ class Playlists(commands.Cog):
         await Music.play(song=first_song, playlist=True, ctx=ctx)
         queue = []
         for song in random.sample(self.playlists[playlist], len(self.playlists[playlist])):
+            time.sleep(3)
             source = await YTDLSource.from_url(url=song['url'])
             Music.queue.append(source)
         await ctx.send("Playlist byl nahrán")
