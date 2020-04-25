@@ -6,6 +6,7 @@ from outputs import songs_in_playlist_output
 from YTDLSource import YTDLSource
 import json
 import random
+import time
 
 class Playlists(commands.Cog):
     def __init__(self, bot):
@@ -16,13 +17,6 @@ class Playlists(commands.Cog):
         with open('playlists/playlists.json') as json_file:
             data = json.load(json_file)
             self.playlists = data
-
-    def load_to_queue(self, playlist):
-        queue = []
-        for song in self.playlists[playlist][1:]:
-            source = YTDLSource.from_url(url=song['url'])
-            queue.append(source)
-        return random.sample(queue, len(queue))
 
     @commands.command(name=options["plnew"]["name"],
                       description=options["plnew"]["description"],
@@ -93,13 +87,14 @@ class Playlists(commands.Cog):
         """Bot will start playing songs from chosen playlist"""
         Music = self.bot.get_cog("Music")
         first_song = random.choice(self.playlists[playlist])['url']
-
+    
         await Music.play(song=first_song, playlist=True, ctx=ctx)
-
-        await ctx.send("Playlist se nahrává..")
-
-        Music.queue = self.load_to_queue(playlist)
-        await ctx.send("Hotovo.")
+        queue = []
+        for i ,song in enumerate (self.playlists[playlist]):
+            source = await YTDLSource.from_url(url=song['url'])
+            queue.append(source)
+        Music.queue = random.sample(queue, len(queue))
+        await ctx.send("Playlist byl nahrán")
 
     @commands.command(name=options["plsongs"]["name"],
                       description=options["plsongs"]["description"],

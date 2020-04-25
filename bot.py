@@ -7,7 +7,7 @@ import os
 from bot_token import TOKEN
 
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"))
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("??"))
 @bot.event 
 async def on_ready():
     print('Logged in as')

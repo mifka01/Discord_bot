@@ -38,7 +38,7 @@ class Music(commands.Cog):
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
 
-        source = YTDLSource.from_url(song)
+        source = await YTDLSource.from_url(song)
         if first:
             self.queue.insert(1, source)
         else:
@@ -83,6 +83,8 @@ class Music(commands.Cog):
                       aliases=options["stop"]["aliases"]) 
     async def stop(self, ctx):
         """Bot will stop playing music"""
+        self.queue = []
+        self.voice_client.stop()
         await self.leave(ctx)
         shutil.rmtree('songs')
         self.queue = []
