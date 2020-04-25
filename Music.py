@@ -76,9 +76,6 @@ class Music(commands.Cog):
     @commands.command(name=options["stop"]["name"],
                       description=options["stop"]["description"],
                       aliases=options["stop"]["aliases"])
-    @commands.command(name=options["stop"]["name"],
-                      description=options["stop"]["description"],
-                      aliases=options["stop"]["aliases"])
     async def stop(self, ctx):
         """Bot will stop playing music"""
         self.queue = []
