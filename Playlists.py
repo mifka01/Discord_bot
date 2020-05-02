@@ -18,13 +18,6 @@ class Playlists(commands.Cog):
             data = json.load(json_file)
             self.playlists = data
 
-    def load_to_queue(self, playlist):
-        queue = []
-        for song in self.playlists[playlist][1:]:
-            source = YTDLSource.from_url(url=song['url'])
-            queue.append(source)
-        return random.sample(queue, len(queue))
-
     @commands.command(name=options["plnew"]["name"],
                       description=options["plnew"]["description"],
                       aliases=options["plnew"]["aliases"])
