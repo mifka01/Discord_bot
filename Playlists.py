@@ -96,7 +96,8 @@ class Playlists(commands.Cog):
         first_song = random.choice(self.playlists[playlist])['url']
     
         await Music.play(song=first_song, playlist=True, ctx=ctx)
-        for song in random.sample(self.playlists[playlist], len(self.playlists[playlist])):
+        shuffeled_playlist = random.sample(self.playlists[playlist], len(self.playlists[playlist]))
+        for song in shuffeled_playlist:
             source = YTDLSource.from_url(url=song['url'])
             Music.queue.append(source)
 
