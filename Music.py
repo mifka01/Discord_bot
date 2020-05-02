@@ -88,7 +88,6 @@ class Music(commands.Cog):
         self.voice_client.stop()
         await self.leave(ctx)
         shutil.rmtree('songs')
-        self.queue = []
 
     @commands.command(name=options["pause"]["name"],
                       description=options["pause"]["description"],
