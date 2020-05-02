@@ -22,7 +22,7 @@ class Music(commands.Cog):
             os.remove(song)
         except (PermissionError, IndexError, FileNotFoundError):
             pass
-
+        
         if len(self.queue) > 0:
             self.current_song = self.queue[0].song_data
             self.voice_client.play(self.queue[0], after=self.check_queue)
@@ -37,22 +37,22 @@ class Music(commands.Cog):
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
 
-        source = await YTDLSource.from_url(song, loop=self.bot.loop)
+        source = await YTDLSource.from_url([song], loop=self.bot.loop, stream=False)
         if first:
-            self.queue.insert(1, source)
+            self.queue.insert(1, source[0])
         else:
-            self.queue.append(source)
+            self.queue.extend(source)
         self.ctx = ctx
         if not self.voice_client.is_playing():
             self.current_song = self.queue[0].song_data
             self.voice_client.play(self.queue[0], after=self.check_queue)
             if not playlist:
-                await ctx.send(embed=playing_output(ctx, source.song_data))
+                await ctx.send(embed=playing_output(ctx, self.queue[0].song_data))
             else:
                 pass
         else:
             if not playlist:
-                await ctx.send(embed=queue_output(ctx, source.song_data))
+                await ctx.send(embed=queue_output(ctx, self.queue[0].song_data))
             else:
                 pass
 

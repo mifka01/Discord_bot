@@ -94,12 +94,11 @@ class Playlists(commands.Cog):
         """Bot will start playing songs from chosen playlist"""
         Music = self.bot.get_cog("Music")
         first_song = random.choice(self.playlists[playlist])['url']
-    
+        urls = []
+        for song in self.playlists[playlist]:
+            urls.append(song["url"])
         await Music.play(song=first_song, playlist=True, ctx=ctx)
-        shuffeled_playlist = random.sample(self.playlists[playlist], len(self.playlists[playlist]))
-        for song in shuffeled_playlist:
-            source = await YTDLSource.from_url(url=song['url'])
-            Music.queue.append(source)
+        Music.queue.extend(await YTDLSource.from_url(songs=urls))
 
         await ctx.send("Playlist byl nahrán")
 
