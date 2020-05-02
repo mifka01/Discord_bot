@@ -14,7 +14,7 @@ ytdl_format_options = {
     'no_warnings': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0',
-    'no-cache-dir': True
+    'rm-cache-dir': True
     
 }
 
@@ -38,9 +38,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     'viewcount': song.get('viewcount'),
                     'duration': song.get('duration')}
     @classmethod
-    def from_url(self, url, *, stream=False):
-        #loop = asyncio.get_event_loop()
-        #song = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=True))
+    async def from_url(self, url, *, stream=False, loop=None):
+        loop = loop or asyncio.get_event_loop()
+        song = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=True))
         song = ytdl.extract_info(url, download=True)
         filename = ytdl.prepare_filename(song)
         return YTDLSource(discord.FFmpegPCMAudio(filename, **ffmpeg_options),song=song, filename=filename)
