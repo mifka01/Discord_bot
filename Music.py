@@ -17,15 +17,16 @@ class Music(commands.Cog):
         self.ctx = None
 
     def check_queue(self, error):
+        try:
+            song = self.queue[0].song_data["filename"]
+            del self.queue[0]
+            os.remove(song)
+        except (PermissionError, IndexError, FileNotFoundError):
+            pass
+        
         if len(self.queue) > 0:
             self.current_song = self.queue[0].song_data
             self.voice_client.play(self.queue[0], after=self.check_queue)
-            try:
-                song = self.queue[0].song_data["filename"]
-                del self.queue[0]
-                os.remove(song)
-            except (PermissionError, IndexError, FileNotFoundError):
-                pass
 
 
     @commands.command(name=options["play"]["name"],
@@ -38,7 +39,7 @@ class Music(commands.Cog):
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
 
-        source = await YTDLSource.from_url(song)
+        source = await YTDLSource.from_url(song, loop=self.bot.loop, stream=False)
         if first:
             self.queue.insert(1, source)
         else:

@@ -1,7 +1,7 @@
 from discord.ext import commands
 from Informative import Informative
 from Music import Music
-from News import News 
+from News import News
 from Playlists import Playlists
 import os
 from bot_token import TOKEN
