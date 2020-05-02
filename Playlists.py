@@ -8,6 +8,7 @@ import json
 import random
 import time
 
+
 class Playlists(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -27,7 +28,8 @@ class Playlists(commands.Cog):
             self.playlists[playlist] = []
             await ctx.send(f"Playlist: {playlist} byl vytvořen")
             with open("playlists/playlists.json", 'w') as f:
-                json_object = json.dumps(self.playlists, sort_keys=True, indent=4)
+                json_object = json.dumps(
+                    self.playlists, sort_keys=True, indent=4)
                 f.write(json_object)
         else:
             await ctx.send(f"Playlist {playlist} již existuje")
@@ -45,14 +47,15 @@ class Playlists(commands.Cog):
         with open("playlists/playlists.json", 'w') as f:
             json_object = json.dumps(self.playlists, sort_keys=True, indent=4)
             f.write(json_object)
-    
+
     @commands.command(name=options["pladd"]["name"],
                       description=options["pladd"]["description"],
                       aliases=options["pladd"]["aliases"])
     async def pladd(self, ctx, playlist, *, song):
         """Bot will add song to chosen playlist"""
         song = YoutubeSearch(song, max_results=1).to_dict()
-        song = {'name': song[0]['title'], 'url': f'https://www.youtube.com{song[0]["link"]}'}
+        song = {'name': song[0]['title'],
+                'url': f'https://www.youtube.com{song[0]["link"]}'}
 
         if song in self.playlists[playlist]:
             await ctx.send(f'{song["name"]} už je v tomto playlistu')
@@ -63,14 +66,15 @@ class Playlists(commands.Cog):
         with open("playlists/playlists.json", 'w') as f:
             json_object = json.dumps(self.playlists, sort_keys=True, indent=4)
             f.write(json_object)
-    
+
     @commands.command(name=options["plrm"]["name"],
                       description=options["plrm"]["description"],
                       aliases=options["plrm"]["aliases"])
     async def plrm(self, ctx, playlist, *, song):
         """Bot will remove song from chosen playlist"""
         song = YoutubeSearch(song, max_results=1).to_dict()
-        song = {'name': song[0]['title'], 'url': f'https://www.youtube.com{song[0]["link"]}'}
+        song = {'name': song[0]['title'],
+                'url': f'https://www.youtube.com{song[0]["link"]}'}
         if song in self.playlists[playlist]:
             self.playlists[playlist].remove(song)
             await ctx.send(f'{song["name"]} byl odstraněn z playlistu: {playlist}')
@@ -79,7 +83,7 @@ class Playlists(commands.Cog):
         with open("playlists/playlists.json", 'w') as f:
             json_object = json.dumps(self.playlists, sort_keys=True, indent=4)
             f.write(json_object)
-    
+
     @commands.command(name=options["plplay"]["name"],
                       description=options["plplay"]["description"],
                       aliases=options["plplay"]["aliases"])
@@ -87,11 +91,12 @@ class Playlists(commands.Cog):
         """Bot will start playing songs from chosen playlist"""
         Music = self.bot.get_cog("Music")
         first_song = random.choice(self.playlists[playlist])['url']
-    
+        urls = []
+        for song in self.playlists[playlist]:
+            urls.append(song["url"])
         await Music.play(song=first_song, playlist=True, ctx=ctx)
-        for song in random.sample(self.playlists[playlist], len(self.playlists[playlist])):
-            source = await YTDLSource.from_url(url=song['url'])
-            Music.queue.append(source)
+        Music.queue.extend(await YTDLSource.from_url(songs=urls))
+
         await ctx.send("Playlist byl nahrán")
 
     @commands.command(name=options["plsongs"]["name"],
@@ -101,5 +106,3 @@ class Playlists(commands.Cog):
         """Bot will show all songs in playlist"""
         playlist = self.playlists[playlist]
         await songs_in_playlist_output(ctx, playlist)
-
-    
