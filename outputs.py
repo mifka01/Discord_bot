@@ -115,9 +115,10 @@ async def songs_in_playlist_output(ctx, playlist):
     await ctx.send(embed=embed)
 
 def playlist_loaded_output(ctx, playlist, name):
-    embed = discord.Embed(title=f'Playlist {name} byl nahrán do fronty', description=f"Nahráno {len(playlist)} songů")
+    queue_duration = 0
     for song in playlist:
         queue_duration += int(song["duration"])
+    embed = discord.Embed(title=f'Playlist {name} byl nahrán do fronty', description=f"Nahráno {len(playlist)} songů")
     embed.add_field(name="Délka:", value=f'{str(datetime.timedelta(seconds=queue_duration))}')
     embed.add_field(name="Žádáno od:", value=f'{ctx.message.author.mention}')
     embed.colour = 16776960
