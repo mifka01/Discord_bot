@@ -51,7 +51,7 @@ class Music(commands.Cog):
                     'url': link,
                     'duration': song.get('duration')}
 
-                if index < 5:
+                if index < (5 - len(self.downloaded_queue)):
                     await self.play(ctx=ctx, song=song_data["url"], playlist=True)
                 else:
                     self.queue.append(song_data)
