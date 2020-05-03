@@ -80,8 +80,8 @@ async def songs_in_queue_output(ctx, queue):
     songs = ""
     queue_duration = 0
     for index, song in enumerate(queue[1:]):
-        songs += f"**{index +1}**: {song.song_data['title']} \n"
-        queue_duration += int(song.song_data["duration"])
+        songs += f"**{index +1}**: {song['title']} \n"
+        queue_duration += int(song["duration"])
         if (index + 1) % 20 == 0:
             embed = discord.Embed(title=f'Dále budou přehrány:', description=f"{songs}\n{str(datetime.timedelta(seconds=queue_duration))}\nŽádáno od: {ctx.message.author.mention}")
             embed.colour = 16776960
@@ -91,11 +91,9 @@ async def songs_in_queue_output(ctx, queue):
     embed = discord.Embed(title=f'Dále budou přehrány:', description=f"{songs}\n{str(datetime.timedelta(seconds=queue_duration))}\nŽádáno od: {ctx.message.author.mention}")
     embed.colour = 16776960
     await ctx.send(embed=embed)
-
+    
 def removed_song(ctx, song_data):
     embed = discord.Embed(title=f'Odebráno z fronty: ', description=f"[{song_data['title']}]({song_data['url']})")
-    embed.set_thumbnail(url=song_data["thumbnail"])
-    embed.add_field(name="Autor:", value=f"[{song_data['uploader']}]({song_data['uploader_url']})")
     embed.add_field(name="Délka:", value=f'{str(datetime.timedelta(seconds=song_data["duration"]))}')
     embed.add_field(name="Žádáno od:", value=f'{ctx.message.author.mention}')
     embed.colour = 16776960
