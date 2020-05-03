@@ -128,7 +128,7 @@ class Music(commands.Cog):
                       aliases=options["song"]["aliases"])
     async def song(self, ctx):
         """Bot will show currently playing"""
-        await ctx.send(embed=playing_output(ctx, self.current_song))
+        await ctx.send(embed=playing_output(ctx, self.current_song.song_data))
 
     @commands.command(name=options["remove"]["name"],
                       description=options["remove"]["description"],

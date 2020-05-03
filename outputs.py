@@ -91,7 +91,7 @@ async def songs_in_queue_output(ctx, queue):
     embed = discord.Embed(title=f'Dále budou přehrány:', description=f"{songs}\n{str(datetime.timedelta(seconds=queue_duration))}\nŽádáno od: {ctx.message.author.mention}")
     embed.colour = 16776960
     await ctx.send(embed=embed)
-    
+
 def removed_song(ctx, song_data):
     embed = discord.Embed(title=f'Odebráno z fronty: ', description=f"[{song_data['title']}]({song_data['url']})")
     embed.add_field(name="Délka:", value=f'{str(datetime.timedelta(seconds=song_data["duration"]))}')
@@ -113,6 +113,15 @@ async def songs_in_playlist_output(ctx, playlist):
     embed = discord.Embed(title=f'{playlist_name}:', description=f"{songs} \nŽádáno od: {ctx.message.author.mention}")
     embed.colour = 16776960
     await ctx.send(embed=embed)
+
+def playlist_loaded_output(ctx, playlist, name):
+    embed = discord.Embed(title=f'Playlist {name} byl nahrán do fronty', description=f"Nahráno {len(playlist)} songů")
+    for song in playlist:
+        queue_duration += int(song["duration"])
+    embed.add_field(name="Délka:", value=f'{str(datetime.timedelta(seconds=queue_duration))}')
+    embed.add_field(name="Žádáno od:", value=f'{ctx.message.author.mention}')
+    embed.colour = 16776960
+    return embed
 
 
 

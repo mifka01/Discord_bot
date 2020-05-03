@@ -2,7 +2,7 @@ from discord.ext import commands
 from commands_options import options
 from youtube_search import YoutubeSearch
 from Music import Music
-from outputs import songs_in_playlist_output
+from outputs import songs_in_playlist_output, playlist_loaded_output
 from YTDLSource import YTDLSource, get_info
 import json
 import random
@@ -96,7 +96,7 @@ class Playlists(commands.Cog):
             await Music.play(song=song['url'], playlist=True, ctx=ctx)
         for song in shuffled_playlist[5:]:
             Music.queue.append(song)
-        await ctx.send("Playlist byl nahrán")
+        await ctx.send(embed=playlist_loaded_output(ctx, shuffled_playlist, playlist))
 
     @commands.command(name=options["plsongs"]["name"],
                       description=options["plsongs"]["description"],
