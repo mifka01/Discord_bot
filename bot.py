@@ -18,7 +18,7 @@ async def on_ready():
 
 #@bot.event
 #async def on_command_error(ctx, error):
-    #await ctx.send(f"{ctx.message.author.mention} Unknown command -> use ?help")
+    #await ctx.send(f"{ctx.message.author.mention}  Unknown command -> use ?help")
 
 
 bot.add_cog(Informative(bot))

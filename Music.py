@@ -13,20 +13,24 @@ class Music(commands.Cog):
         self.bot = bot
         self.voice_client = None
         self.queue = []
+        self.queue_data = []
+        self.downloaded_queue = []
         self.current_song = None
-        self.ctx = None
 
     def check_queue(self, error):
-        try:
-            song = self.queue[0].song_data["filename"]
-            del self.queue[0]
-            os.remove(song)
-        except (PermissionError, IndexError, FileNotFoundError):
-            pass
-        
-        if len(self.queue) > 0:
-            self.current_song = self.queue[0].song_data
-            self.voice_client.play(self.queue[0], after=self.check_queue)
+        del self.downloaded_queue[0]
+        os.remove(self.current_song.song_data["filename"])
+        if len(self.downloaded_queue) > 0:
+                self.voice_client.play(self.downloaded_queue[0], after=self.check_queue)
+                self.current_song = self.downloaded_queue[0]
+                if len(self.queue) > 0:
+                    downloaded_song = self.download_song(self.queue[0]['url'])
+                    self.downloaded_queue.append(downloaded_song)
+                    del self.queue[0]
+
+
+    def download_song(self, song):
+        return YTDLSource.from_url(self=YTDLSource, song=song, loop=self.bot.loop, stream=False)
 
 
     @commands.command(name=options["play"]["name"],
@@ -38,28 +42,29 @@ class Music(commands.Cog):
         if song[0:8] != "https://":
             song = YoutubeSearch(song, max_results=1).to_dict()
             song = f'https://www.youtube.com{song[0]["link"]}'
+        
+        downloaded_song = self.download_song(song)
 
-        source = await YTDLSource.from_url([song], loop=self.bot.loop, stream=False)
         if first:
-            self.queue.insert(1, source[0])
+            self.downloaded_queue.insert(1, downloaded_song)
         else:
-            self.queue.extend(source)
-        self.ctx = ctx
-        if not self.voice_client.is_playing():
-            self.current_song = self.queue[0].song_data
-            self.voice_client.play(self.queue[0], after=self.check_queue)
-            if not playlist:
-                await ctx.send(embed=playing_output(ctx, self.queue[0].song_data))
-            else:
-                pass
-        else:
-            if not playlist:
-                await ctx.send(embed=queue_output(ctx, self.queue[0].song_data))
-            else:
-                pass
-            
+            self.downloaded_queue.append(downloaded_song)
 
-                
+        
+        
+        if not self.voice_client.is_playing():
+            self.current_song = downloaded_song
+            self.voice_client.play(downloaded_song, after=self.check_queue)
+            if not playlist:
+                await ctx.send(embed=playing_output(ctx, downloaded_song.song_data))
+            else:
+                pass
+        else:
+            if not playlist:
+                await ctx.send(embed=queue_output(ctx, downloaded_song.song_data))
+            else:
+                pass
+                    
 
     @commands.command(name=options["join"]["name"],
                       description=options["join"]["description"],
@@ -85,8 +90,12 @@ class Music(commands.Cog):
     async def stop(self, ctx):
         """Bot will stop playing music"""
         self.queue = []
-        self.voice_client.stop()
-        await self.leave(ctx)
+        try:
+            self.voice_client.stop()
+            await self.leave(ctx)
+        except AttributeError:
+            pass
+
         shutil.rmtree('songs')
 
     @commands.command(name=options["pause"]["name"],
@@ -115,28 +124,35 @@ class Music(commands.Cog):
                       aliases=options["queue"]["aliases"])
     async def song_queue(self, ctx):
         """Bot will show songs in queue"""
-        await songs_in_queue_output(ctx, self.queue)
+        self.queue_data = [song.song_data for song in self.downloaded_queue]
+        self.queue_data.extend(self.queue)
+        await songs_in_queue_output(ctx, self.queue_data)
 
     @commands.command(name=options["song"]["name"],
                       description=options["song"]["description"],
                       aliases=options["song"]["aliases"])
     async def song(self, ctx):
         """Bot will show currently playing"""
-        await ctx.send(embed=playing_output(ctx, self.current_song))
+        await ctx.send(embed=playing_output(ctx, self.current_song.song_data))
     
     @commands.command(name=options["remove"]["name"],
                       description=options["remove"]["description"],
                       aliases=options["remove"]["aliases"])
     async def remove(self, ctx, num: int):
         """Bot will remove chosen song from queue"""
-        if num <= len(self.queue) -1 :
-            song = self.queue[num]
+        if num <= len(self.queue_data) -1 :
+            song = self.queue_data[num]
             if num == 0 :
                 await self.skip(ctx)
             else:
-                del self.queue[num]
-                os.remove(song.song_data["filename"])
-            await ctx.send(embed=removed_song(ctx, song.song_data))
+                try:
+                    del self.queue_data[num]
+                    del self.downloaded_queue[num]
+                    del self.queue[num]
+                    os.remove(song["filename"])
+                except:
+                    pass
+            await ctx.send(embed=removed_song(ctx, song))
         else:
             pass
     

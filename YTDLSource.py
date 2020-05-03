@@ -1,6 +1,7 @@
 import youtube_dl
 import discord
 import asyncio
+import time
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -24,6 +25,9 @@ ffmpeg_options = {
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
+def get_info(song, download=False):
+     return ytdl.extract_info(song, download=download)
+
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, song, filename, volume=0.5):
         super().__init__(source, volume)
@@ -37,13 +41,11 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     'thumbnail': song.get('thumbnail'),
                     'viewcount': song.get('viewcount'),
                     'duration': song.get('duration')}
-    @classmethod
-    async def from_url(self, songs, *, loop=None, stream=False):
+
+    def from_url(self, song, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
-        result = []
-        for i in songs:
-            song = await loop.run_in_executor(None, lambda: ytdl.extract_info(i, download=True))
-            song = ytdl.extract_info(i, download=True)
-            filename = ytdl.prepare_filename(song)
-            result.append(YTDLSource(discord.FFmpegPCMAudio(filename, **ffmpeg_options),song=song, filename=filename))
-        return result
+        song = get_info(song=song, download=True)
+        filename = ytdl.prepare_filename(song)
+            
+        return YTDLSource(discord.FFmpegPCMAudio(filename, **ffmpeg_options),song=song, filename=filename)
+
