@@ -103,7 +103,7 @@ async def songs_in_playlist_output(ctx, playlist):
     songs = ""
     playlist_name = ctx.message.content[9:]
     for index, song in enumerate(playlist):
-        songs += f"{song['name']} \n"
+        songs += f"{song['title']} \n"
         if (index + 1) % 20 == 0:
             embed = discord.Embed(title=f'{playlist_name}:', description=f"{songs} \nŽádáno od: {ctx.message.author.mention}")
             embed.colour = 16776960
