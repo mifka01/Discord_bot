@@ -18,7 +18,10 @@ class Music(commands.Cog):
 
     def check_queue(self, error):
         del self.downloaded_queue[0]
-        os.remove(self.current_song.song_data["filename"])
+        try:
+            os.remove(self.current_song.song_data["filename"])
+        except FileNotFoundError:
+            pass
         if len(self.downloaded_queue) > 0:
             self.voice_client.play(self.downloaded_queue[0], after=self.check_queue)
             self.current_song = self.downloaded_queue[0]
@@ -89,9 +92,10 @@ class Music(commands.Cog):
         try:
             self.voice_client.stop()
             await self.leave(ctx)
-        except AttributeError:
+            shutil.rmtree('songs')
+        except (AttributeError, FileNotFoundError):
             pass
-        shutil.rmtree('songs')
+        
 
     @commands.command(name=options["pause"]["name"],
                       description=options["pause"]["description"],
