@@ -45,16 +45,13 @@ class Music(commands.Cog):
             result = get_info(song)
             songs = result.get("entries")
             for index, song in enumerate(songs):
-                link = YoutubeSearch(
-                    song.get("title"), max_results=1).to_dict()
-                if len(link) == 0:
-                    print("Málo")
-                    continue
+                link = YoutubeSearch(song.get("title"), max_results=1).to_dict()
                 link = f'https://www.youtube.com{link[0]["link"]}'
                 song_data = {
                     'title': song.get('title'),
                     'url': link,
                     'duration': song.get('duration')}
+
                 if index < 5:
                     await self.play(ctx=ctx, song=song_data["url"], playlist=True)
                 else:
@@ -62,31 +59,29 @@ class Music(commands.Cog):
 
         else:
             if "https://" not in song:
-                try:
-                    song = YoutubeSearch(song, max_results=1).to_dict()
-                    song = f'https://www.youtube.com{song[0]["link"]}'
+                song = YoutubeSearch(song, max_results=1).to_dict()
+                song = f'https://www.youtube.com{song[0]["link"]}'
+            
+            downloaded_song = self.download_song(song)
 
-                    downloaded_song = self.download_song(song)
+            if first:
+                self.downloaded_queue.insert(1, downloaded_song)
+            else:
+                self.downloaded_queue.append(downloaded_song)
 
-                    if first:
-                        self.downloaded_queue.insert(1, downloaded_song)
-                    else:
-                        self.downloaded_queue.append(downloaded_song)
-
-                    if not self.voice_client.is_playing():
-                        self.current_song = downloaded_song
-                        self.voice_client.play(
-                            downloaded_song, after=self.check_queue)
-                        if not playlist:
-                            await ctx.send(embed=playing_output(ctx, downloaded_song.song_data))
-                        else:
-                            pass
-                    else:
-                        if not playlist:
-                            await ctx.send(embed=queue_output(ctx, downloaded_song.song_data))
-                        else:
-                            pass
-                except IndexError:
+            
+            
+            if not self.voice_client.is_playing():
+                self.current_song = downloaded_song
+                self.voice_client.play(downloaded_song, after=self.check_queue)
+                if not playlist:
+                    await ctx.send(embed=playing_output(ctx, downloaded_song.song_data))
+                else:
+                    pass
+            else:
+                if not playlist:
+                    await ctx.send(embed=queue_output(ctx, downloaded_song.song_data))
+                else:
                     pass
 
     @commands.command(name=options["join"]["name"],
