@@ -48,6 +48,7 @@ class Music(commands.Cog):
                 link = YoutubeSearch(
                     song.get("title"), max_results=1).to_dict()
                 if len(link) == 0:
+                    print("Málo")
                     continue
                 link = f'https://www.youtube.com{link[0]["link"]}'
                 song_data = {
