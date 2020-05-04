@@ -23,7 +23,8 @@ class Music(commands.Cog):
         except FileNotFoundError:
             pass
         if len(self.downloaded_queue) > 0:
-            self.voice_client.play(self.downloaded_queue[0], after=self.check_queue)
+            self.voice_client.play(
+                self.downloaded_queue[0], after=self.check_queue)
             self.current_song = self.downloaded_queue[0]
             if len(self.queue) > 0:
                 downloaded_song = self.download_song(self.queue[0]['url'])
@@ -44,7 +45,9 @@ class Music(commands.Cog):
             result = get_info(song)
             songs = result.get("entries")
             for index, song in enumerate(songs):
-                link = YoutubeSearch(song.get("title"), max_results=1).to_dict()
+                link = YoutubeSearch(
+                    song.get("title"), max_results=1).to_dict()
+                print(link)
                 link = f'https://www.youtube.com{link[0]["link"]}'
                 song_data = {
                     'title': song.get('title'),
@@ -60,7 +63,7 @@ class Music(commands.Cog):
             if "https://" not in song:
                 song = YoutubeSearch(song, max_results=1).to_dict()
                 song = f'https://www.youtube.com{song[0]["link"]}'
-            
+
             downloaded_song = self.download_song(song)
 
             if first:
@@ -68,8 +71,6 @@ class Music(commands.Cog):
             else:
                 self.downloaded_queue.append(downloaded_song)
 
-            
-            
             if not self.voice_client.is_playing():
                 self.current_song = downloaded_song
                 self.voice_client.play(downloaded_song, after=self.check_queue)
@@ -113,7 +114,6 @@ class Music(commands.Cog):
             shutil.rmtree('songs')
         except (AttributeError, FileNotFoundError):
             pass
-        
 
     @commands.command(name=options["pause"]["name"],
                       description=options["pause"]["description"],
@@ -157,9 +157,9 @@ class Music(commands.Cog):
                       aliases=options["remove"]["aliases"])
     async def remove(self, ctx, num: int):
         """Bot will remove chosen song from queue"""
-        if num <= len(self.queue_data) -1 :
+        if num <= len(self.queue_data) - 1:
             song = self.queue_data[num]
-            if num == 0 :
+            if num == 0:
                 await self.skip(ctx)
             else:
                 try:
