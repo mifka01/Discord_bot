@@ -108,6 +108,7 @@ class Music(commands.Cog):
     async def stop(self, ctx):
         """Bot will stop playing music"""
         self.queue = []
+        self.downloaded_queue = []
         try:
             self.voice_client.stop()
             await self.leave(ctx)
