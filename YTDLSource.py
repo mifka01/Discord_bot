@@ -44,10 +44,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
     def from_url(self, song, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
-        try:
-            song = get_info(song=song, download=True)
-        except youtube_dl.utils.DownloadError:
-            return
+        song = get_info(song=song, download=True)
         filename = ytdl.prepare_filename(song)
             
         return YTDLSource(discord.FFmpegPCMAudio(filename, **ffmpeg_options),song=song, filename=filename)
