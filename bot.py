@@ -5,7 +5,6 @@ from News import News
 from Playlists import Playlists
 import os
 
-
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"))
 @bot.event 
 async def on_ready():
