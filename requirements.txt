@@ -1,4 +1,4 @@
-discord.py
+-U discord.py
 PyNaCl
 lxml
 beautifulsoup4
