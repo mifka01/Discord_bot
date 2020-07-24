@@ -52,7 +52,7 @@ class Playlists(commands.Cog):
     async def pladd(self, ctx, playlist, *, song):
         """Bot will add song to chosen playlist"""
         link = YoutubeSearch(song, max_results=1).to_dict()
-        link = f'https://www.youtube.com{link[0]["link"]}'
+        link = f'https://www.youtube.com{link[0]["url_suffix"]}'
         song = get_info(song=link)
         song_data = {
                     'title': song.get('title'),
@@ -75,7 +75,7 @@ class Playlists(commands.Cog):
     async def plrm(self, ctx, playlist, *, song):
         """Bot will remove song from chosen playlist"""
         song = YoutubeSearch(song, max_results=1).to_dict()
-        song = {'name': song[0]['title'], 'url': f'https://www.youtube.com{song[0]["link"]}'}
+        song = {'name': song[0]['title'], 'url': f'https://www.youtube.com{song[0]["url_suffix"]}'}
         if song in self.playlists[playlist]:
             self.playlists[playlist].remove(song)
             await ctx.send(f'{song["name"]} byl odstraněn z playlistu: {playlist}')

@@ -46,7 +46,7 @@ class Music(commands.Cog):
             songs = result.get("entries")
             for index, song in enumerate(songs):
                 link = YoutubeSearch(song.get("title"), max_results=1).to_dict()
-                link = f'https://www.youtube.com{link[0]["link"]}'
+                link = f'https://www.youtube.com{link[0]["url_suffix"]}'
                 song_data = {
                     'title': song.get('title'),
                     'url': link,
@@ -61,7 +61,7 @@ class Music(commands.Cog):
             if "https://" not in song:
                 song = YoutubeSearch(song, max_results=1).to_dict()
                 print(song)
-                song = f'https://www.youtube.com{song[0]["link"]}'
+                song = f'https://www.youtube.com{song[0]["url_suffix"]}'
             
             downloaded_song = self.download_song(song)
 
