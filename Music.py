@@ -60,6 +60,7 @@ class Music(commands.Cog):
         else:
             if "https://" not in song:
                 song = YoutubeSearch(song, max_results=1).to_dict()
+                print(song)
                 song = f'https://www.youtube.com{song[0]["link"]}'
             
             downloaded_song = self.download_song(song)
